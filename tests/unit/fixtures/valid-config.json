@@ -1,0 +1,33 @@
+{
+  "models": [
+    {
+      "id": "local-codegen",
+      "provider": "ollama",
+      "endpoint": "http://localhost:11434",
+      "model_name": "codellama:13b",
+      "capabilities": ["code_generation", "reasoning"],
+      "priority": 10,
+      "timeout_ms": 60000,
+      "scores": {
+        "code_generation": 78,
+        "reasoning": 45
+      }
+    },
+    {
+      "id": "cloud-gpt4",
+      "provider": "openai",
+      "endpoint": "https://api.openai.com/v1",
+      "model_name": "gpt-4o",
+      "capabilities": ["code_generation", "reasoning", "summarization"],
+      "priority": 5,
+      "auth": {
+        "env_var": "OPENAI_API_KEY"
+      },
+      "timeout_ms": 30000,
+      "tags": ["no-benchmark"]
+    }
+  ],
+  "defaults": {
+    "timeout_ms": 30000
+  }
+}
