@@ -1,0 +1,73 @@
+{
+  "models": [
+    {
+      "id": "local-codegen",
+      "provider": "ollama",
+      "endpoint": "http://localhost:11434",
+      "model_name": "codellama:13b",
+      "capabilities": ["code_generation", "reasoning"],
+      "priority": 10,
+      "timeout_ms": 60000
+    },
+    {
+      "id": "local-chat",
+      "provider": "ollama",
+      "endpoint": "http://localhost:11434",
+      "model_name": "llama3:8b",
+      "capabilities": ["chat", "summarization", "translation"],
+      "priority": 8,
+      "timeout_ms": 45000
+    },
+    {
+      "id": "lmstudio-local",
+      "provider": "openai-compatible",
+      "endpoint": "http://localhost:1234/v1",
+      "model_name": "my-local-model",
+      "capabilities": ["chat", "code_generation", "reasoning"],
+      "priority": 9,
+      "timeout_ms": 45000
+    },
+    {
+      "id": "cloud-gpt4",
+      "provider": "openai",
+      "endpoint": "https://api.openai.com/v1",
+      "model_name": "gpt-4o",
+      "capabilities": ["code_generation", "reasoning", "summarization"],
+      "priority": 5,
+      "auth": {
+        "env_var": "OPENAI_API_KEY"
+      },
+      "timeout_ms": 30000,
+      "tags": ["no-benchmark"]
+    },
+    {
+      "id": "cloud-claude",
+      "provider": "anthropic",
+      "endpoint": "https://api.anthropic.com",
+      "model_name": "claude-sonnet-4-20250514",
+      "capabilities": ["reasoning", "summarization", "translation"],
+      "priority": 8,
+      "auth": {
+        "env_var": "ANTHROPIC_API_KEY"
+      },
+      "timeout_ms": 30000,
+      "tags": ["no-benchmark"]
+    },
+    {
+      "id": "cloud-gemini",
+      "provider": "gemini",
+      "endpoint": "https://generativelanguage.googleapis.com/v1beta",
+      "model_name": "gemini-2.5-flash",
+      "capabilities": ["summarization", "translation", "chat"],
+      "priority": 6,
+      "auth": {
+        "env_var": "GOOGLE_API_KEY"
+      },
+      "timeout_ms": 30000,
+      "tags": ["no-benchmark"]
+    }
+  ],
+  "defaults": {
+    "timeout_ms": 30000
+  }
+}

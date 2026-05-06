@@ -1,0 +1,114 @@
+[
+  {
+    "model_id": "local-codegen",
+    "timestamp": "2026-05-06T10:30:00.000Z",
+    "categories": [
+      {
+        "category": "code_generation",
+        "score": 78,
+        "avg_latency_ms": 1200,
+        "prompts_tested": 4,
+        "details": [
+          {
+            "prompt": "Write a FizzBuzz function in JavaScript that takes a number n and returns an array of strings from 1 to n.",
+            "expected_pattern": "function|const|=>.*fizz.*buzz",
+            "actual_output": "```javascript\nfunction fizzBuzz(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) result.push('FizzBuzz');\n    else if (i % 3 === 0) result.push('Fizz');\n    else if (i % 5 === 0) result.push('Buzz');\n    else result.push(String(i));\n  }\n  return result;\n}\n```",
+            "score": 100,
+            "latency_ms": 1500
+          },
+          {
+            "prompt": "Write a function that sorts an array of numbers in ascending order.",
+            "expected_pattern": "function|const|=>.*sort|return",
+            "actual_output": "```javascript\nfunction sortNumbers(arr) {\n  return arr.slice().sort((a, b) => a - b);\n}\n```",
+            "score": 100,
+            "latency_ms": 800
+          },
+          {
+            "prompt": "Define a TypeScript interface for a User with fields: id (number), name (string), and email (string).",
+            "expected_pattern": "interface|type.*id.*name.*email",
+            "actual_output": "```typescript\ninterface User {\n  id: number;\n  name: string;\n  email: string;\n}\n```",
+            "score": 100,
+            "latency_ms": 600
+          },
+          {
+            "prompt": "Write a function that checks if a string is a palindrome.",
+            "expected_pattern": "function|const|=>.*reverse|split|join|palindrome",
+            "actual_output": "```javascript\nfunction isPalindrome(str) {\n  const cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, '');\n  return cleaned === cleaned.split('').reverse().join('');\n}\n```",
+            "score": 100,
+            "latency_ms": 1900
+          }
+        ]
+      },
+      {
+        "category": "reasoning",
+        "score": 75,
+        "avg_latency_ms": 900,
+        "prompts_tested": 4,
+        "details": [
+          {
+            "prompt": "What is 15 + 27?",
+            "expected_pattern": "42",
+            "actual_output": "15 + 27 = 42",
+            "score": 100,
+            "latency_ms": 300
+          },
+          {
+            "prompt": "If all cats are animals, and Whiskers is a cat, what can we conclude about Whiskers?",
+            "expected_pattern": "animal",
+            "actual_output": "We can conclude that Whiskers is an animal, since all cats are animals and Whiskers is a cat.",
+            "score": 100,
+            "latency_ms": 500
+          },
+          {
+            "prompt": "What is the next number in the sequence: 2, 4, 8, 16, ?",
+            "expected_pattern": "32",
+            "actual_output": "The next number is 32. Each number is doubled (multiplied by 2).",
+            "score": 100,
+            "latency_ms": 400
+          },
+          {
+            "prompt": "A train travels 60 km in 1 hour. How far does it travel in 2.5 hours at the same speed?",
+            "expected_pattern": "150",
+            "actual_output": "The train travels at 60 km/h. In 2.5 hours it would travel 60 * 2.5 = 150 km.",
+            "score": 100,
+            "latency_ms": 2400
+          }
+        ]
+      },
+      {
+        "category": "summarization",
+        "score": 67,
+        "avg_latency_ms": 1100,
+        "prompts_tested": 3,
+        "details": [
+          {
+            "prompt": "Summarize in one sentence: The quick brown fox jumped over the lazy dog. The dog was sleeping in the sun and did not notice the fox. The fox continued running through the forest until it reached a river.",
+            "expected_pattern": ".{20,200}",
+            "actual_output": "A fox jumped over a sleeping dog and ran through the forest to a river.",
+            "score": 100,
+            "latency_ms": 800
+          },
+          {
+            "prompt": "Summarize the following in 2-3 sentences: Machine learning is a subset of artificial intelligence that enables systems to learn from data. It uses algorithms to identify patterns and make decisions with minimal human intervention. Applications include image recognition, natural language processing, and recommendation systems.",
+            "expected_pattern": ".{30,300}",
+            "actual_output": "Machine learning is an AI subset that learns from data using algorithms. It finds patterns and makes decisions automatically, with applications in image recognition, NLP, and recommendations.",
+            "score": 100,
+            "latency_ms": 1200
+          },
+          {
+            "prompt": "Give a one-line summary: TypeScript is a programming language developed by Microsoft. It is a strict syntactical superset of JavaScript that adds optional static typing. It is designed for development of large applications and transpiles to JavaScript.",
+            "expected_pattern": "typescript|programming|language|javascript|typing",
+            "actual_output": "TypeScript is Microsoft's typed superset of JavaScript for large-scale application development.",
+            "score": 100,
+            "latency_ms": 1300
+          }
+        ]
+      }
+    ],
+    "scores": {
+      "code_generation": 78,
+      "reasoning": 75,
+      "summarization": 67
+    }
+  }
+]
