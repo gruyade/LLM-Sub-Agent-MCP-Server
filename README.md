@@ -1,5 +1,7 @@
 # LLM Sub-Agent MCP Server
 
+[日本語版 README はこちら](README_jp.md)
+
 An MCP (Model Context Protocol) server that enables Kiro IDE to invoke LLMs (Large Language Models) as sub-agents. Provides a unified interface for both local LLMs (Ollama, etc.) and cloud APIs (OpenAI, Anthropic, Google Gemini).
 
 ## Overview

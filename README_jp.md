@@ -1,5 +1,7 @@
 # LLM Sub-Agent MCP Server
 
+[English README](README.md)
+
 KiroからMCPプロトコル（Model Context Protocol）経由でLLM（大規模言語モデル）をサブエージェントとして呼び出すためのMCPサーバ。ローカルLLM（Ollama等）とクラウドAPI（OpenAI, Anthropic, Google Gemini）を統一インターフェースで利用可能にする。
 
 ## 概要
