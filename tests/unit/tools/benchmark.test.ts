@@ -35,6 +35,19 @@ function createMockProvider(
   };
 }
 
+/** テスト用モックプロバイダMap */
+function createMockProviderMap(
+  generateFn?: (req: GenerateRequest) => Promise<UnifiedResponse>,
+): Map<string, ProviderAdapter> {
+  const map = new Map<string, ProviderAdapter>();
+  map.set("ollama", createMockProvider(generateFn));
+  map.set("openai-compatible", {
+    ...createMockProvider(generateFn),
+    provider: "openai-compatible",
+  });
+  return map;
+}
+
 /** テスト用Ollamaモデルエントリ */
 function createOllamaEntry(overrides?: Partial<ModelEntry>): ModelEntry {
   return {
@@ -76,7 +89,7 @@ describe("handleBenchmarkModel", () => {
     test("ベンチマーク実行成功 → BenchmarkResult返却", async () => {
       const entry = createOllamaEntry();
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "test-ollama" },
@@ -97,7 +110,7 @@ describe("handleBenchmarkModel", () => {
     test("カテゴリ指定でフィルタ実行", async () => {
       const entry = createOllamaEntry();
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "test-ollama", categories: ["reasoning"] },
@@ -114,7 +127,7 @@ describe("handleBenchmarkModel", () => {
     test("結果のscoresに各カテゴリスコアが含まれる", async () => {
       const entry = createOllamaEntry();
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "test-ollama", categories: ["code_generation", "reasoning"] },
@@ -132,7 +145,7 @@ describe("handleBenchmarkModel", () => {
     test("存在しないmodel_idでbenchmarkエラー返却", async () => {
       const entry = createOllamaEntry();
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "nonexistent" },
@@ -150,7 +163,7 @@ describe("handleBenchmarkModel", () => {
     test("no-benchmarkタグ付きモデルでbenchmarkエラー返却", async () => {
       const entry = createOllamaEntry({ tags: ["no-benchmark"] });
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "test-ollama" },
@@ -165,7 +178,7 @@ describe("handleBenchmarkModel", () => {
       expect(error.model_id).toBe("test-ollama");
     });
 
-    test("非Ollamaプロバイダでbenchmarkエラー返却", async () => {
+    test("クラウドプロバイダでbenchmarkエラー返却", async () => {
       const entry: ModelEntry = {
         id: "test-openai",
         provider: "openai",
@@ -177,7 +190,7 @@ describe("handleBenchmarkModel", () => {
         auth: { api_key: "sk-test" },
       };
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "test-openai" },
@@ -197,7 +210,7 @@ describe("handleBenchmarkModel", () => {
     test("成功時のレスポンスにisErrorが含まれない", async () => {
       const entry = createOllamaEntry();
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "test-ollama", categories: ["chat"] },
@@ -212,7 +225,7 @@ describe("handleBenchmarkModel", () => {
     test("エラー時のレスポンスにisError: trueが含まれる", async () => {
       const entry = createOllamaEntry();
       const registry = new ModelRegistry([entry]);
-      const runner = new BenchmarkRunner(createMockProvider(), store, registry);
+      const runner = new BenchmarkRunner(createMockProviderMap(), store, registry);
 
       const result = await handleBenchmarkModel(
         { model_id: "nonexistent" },

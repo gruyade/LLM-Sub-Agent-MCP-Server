@@ -7,7 +7,7 @@ import { z } from "zod";
 /** 個別モデルエントリのスキーマ */
 export const ModelEntrySchema = z.object({
   id: z.string().min(1),
-  provider: z.enum(["ollama", "openai", "anthropic", "gemini"]),
+  provider: z.enum(["ollama", "openai", "openai-compatible", "anthropic", "gemini"]),
   endpoint: z.string().url(),
   model_name: z.string().min(1),
   capabilities: z.array(z.string()).min(1),

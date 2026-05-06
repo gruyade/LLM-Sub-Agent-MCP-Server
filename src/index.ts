@@ -11,6 +11,7 @@ import { CapabilityRouter } from "@/router/capability-router.js";
 import type { ProviderAdapter } from "@/providers/base.js";
 import { OllamaAdapter } from "@/providers/ollama.js";
 import { OpenAIAdapter } from "@/providers/openai.js";
+import { OpenAICompatibleAdapter } from "@/providers/openai-compatible.js";
 import { AnthropicAdapter } from "@/providers/anthropic.js";
 import { GeminiAdapter } from "@/providers/gemini.js";
 import { invokeLlmSchema, handleInvokeLlm } from "@/tools/invoke-llm.js";
@@ -29,6 +30,7 @@ export function createProviderMap(): Map<string, ProviderAdapter> {
   const map = new Map<string, ProviderAdapter>();
   map.set("ollama", new OllamaAdapter());
   map.set("openai", new OpenAIAdapter());
+  map.set("openai-compatible", new OpenAICompatibleAdapter());
   map.set("anthropic", new AnthropicAdapter());
   map.set("gemini", new GeminiAdapter());
   return map;
@@ -74,9 +76,8 @@ export async function setupServer(configPath: string): Promise<McpServer> {
   );
 
   // benchmark_model ツール登録
-  const ollamaAdapter = providers.get("ollama")!;
   const benchmarkStore = new BenchmarkStore(dirname(configPath));
-  const benchmarkRunner = new BenchmarkRunner(ollamaAdapter, benchmarkStore, registry);
+  const benchmarkRunner = new BenchmarkRunner(providers, benchmarkStore, registry);
 
   server.tool(
     "benchmark_model",

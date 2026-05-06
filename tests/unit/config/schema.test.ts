@@ -76,8 +76,8 @@ describe("ModelEntrySchema", () => {
     expect(() => ModelEntrySchema.parse(invalid)).toThrow();
   });
 
-  test("4つのproviderすべてが有効", () => {
-    for (const provider of ["ollama", "openai", "anthropic", "gemini"]) {
+  test("5つのproviderすべてが有効", () => {
+    for (const provider of ["ollama", "openai", "openai-compatible", "anthropic", "gemini"]) {
       const entry = { ...validEntry, provider };
       expect(() => ModelEntrySchema.parse(entry)).not.toThrow();
     }

@@ -1,8 +1,8 @@
 /**
  * ベンチマークランナー
  *
- * Ollamaプロバイダのモデルに対してカテゴリ別テストプロンプトを実行し、
- * スコアを算出して結果を永続化する。
+ * ローカルLLMプロバイダ（ollama, openai-compatible）のモデルに対して
+ * カテゴリ別テストプロンプトを実行し、スコアを算出して結果を永続化する。
  */
 
 import type { ProviderAdapter, GenerateRequest } from "@/providers/base.js";
@@ -17,19 +17,22 @@ import {
 } from "@/benchmark/store.js";
 import type { ModelRegistry } from "@/registry/model-registry.js";
 
+/** ベンチマーク対象のローカルプロバイダー一覧 */
+const BENCHMARKABLE_PROVIDERS = ["ollama", "openai-compatible"] as const;
+
 export interface BenchmarkRequest {
   model_id: string;
   categories?: string[]; // 未指定時は全カテゴリ
 }
 
 export class BenchmarkRunner {
-  private readonly provider: ProviderAdapter;
+  private readonly providers: Map<string, ProviderAdapter>;
   private readonly store: BenchmarkStore;
   private readonly registry: ModelRegistry;
   private readonly scorer: Scorer;
 
-  constructor(provider: ProviderAdapter, store: BenchmarkStore, registry: ModelRegistry) {
-    this.provider = provider;
+  constructor(providers: Map<string, ProviderAdapter>, store: BenchmarkStore, registry: ModelRegistry) {
+    this.providers = providers;
     this.store = store;
     this.registry = registry;
     this.scorer = new Scorer();
@@ -37,10 +40,10 @@ export class BenchmarkRunner {
 
   /**
    * モデルがベンチマーク対象か判定
-   * Ollamaプロバイダかつ"no-benchmark"タグなしの場合true
+   * ローカルプロバイダ（ollama, openai-compatible）かつ"no-benchmark"タグなしの場合true
    */
   isBenchmarkable(entry: ModelEntry): boolean {
-    if (entry.provider !== "ollama") {
+    if (!(BENCHMARKABLE_PROVIDERS as readonly string[]).includes(entry.provider)) {
       return false;
     }
     if (entry.tags?.includes("no-benchmark")) {
@@ -62,7 +65,7 @@ export class BenchmarkRunner {
     if (!this.isBenchmarkable(entry)) {
       throw new Error(
         `Model "${request.model_id}" is not benchmarkable: ` +
-          `provider must be "ollama" and must not have "no-benchmark" tag`
+          `provider must be "ollama" or "openai-compatible" and must not have "no-benchmark" tag`
       );
     }
 
@@ -144,6 +147,11 @@ export class BenchmarkRunner {
   }
 
   private async runSinglePrompt(entry: ModelEntry, testPrompt: TestPrompt): Promise<PromptResult> {
+    const provider = this.providers.get(entry.provider);
+    if (!provider) {
+      throw new Error(`Provider not found for benchmark: ${entry.provider}`);
+    }
+
     const request: GenerateRequest = {
       prompt: testPrompt.prompt,
       model_name: entry.model_name,
@@ -155,9 +163,14 @@ export class BenchmarkRunner {
     const startTime = performance.now();
 
     try {
-      const response = await this.provider.generate(request);
+      const response = await provider.generate(request);
       const latency = Math.round(performance.now() - startTime);
-      const score = this.scorer.evaluate(response.text, testPrompt.expected_pattern);
+      const score = this.scorer.evaluate(
+        response.text,
+        testPrompt.expected_pattern,
+        testPrompt.category,
+        latency
+      );
 
       return {
         prompt: testPrompt.prompt,

@@ -6,11 +6,12 @@ import { createProviderMap, setupServer } from "@/index.js";
 import { join } from "node:path";
 
 describe("createProviderMap", () => {
-  test("4プロバイダ全てが登録される", () => {
+  test("5プロバイダ全てが登録される", () => {
     const map = createProviderMap();
-    expect(map.size).toBe(4);
+    expect(map.size).toBe(5);
     expect(map.has("ollama")).toBe(true);
     expect(map.has("openai")).toBe(true);
+    expect(map.has("openai-compatible")).toBe(true);
     expect(map.has("anthropic")).toBe(true);
     expect(map.has("gemini")).toBe(true);
   });

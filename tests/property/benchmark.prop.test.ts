@@ -126,7 +126,7 @@ const noBenchmarkEntryArb = fc.tuple(
   fc.integer({ min: 0, max: 100 }),
   fc.integer({ min: 1000, max: 60000 }),
   tagsWithNoBenchmarkArb,
-  fc.constantFrom("ollama", "openai", "anthropic", "gemini") as fc.Arbitrary<"ollama" | "openai" | "anthropic" | "gemini">
+  fc.constantFrom("ollama", "openai", "openai-compatible", "anthropic", "gemini") as fc.Arbitrary<"ollama" | "openai" | "openai-compatible" | "anthropic" | "gemini">
 ).map(([id, capabilities, priority, timeout_ms, tags, provider]) => ({
   id,
   provider,
@@ -139,8 +139,8 @@ const noBenchmarkEntryArb = fc.tuple(
 } as ModelEntry));
 
 /** モックプロバイダ生成（任意テキストを返す） */
-function createMockProvider(textArb?: string): ProviderAdapter {
-  return {
+function createMockProvider(textArb?: string): Map<string, ProviderAdapter> {
+  const adapter: ProviderAdapter = {
     provider: "ollama",
     generate: async (req: GenerateRequest): Promise<UnifiedResponse> => ({
       text: textArb ?? "mock response with function and 42 and hello interface type",
@@ -155,6 +155,25 @@ function createMockProvider(textArb?: string): ProviderAdapter {
       latency_ms: 50,
     }),
   };
+  const compatAdapter: ProviderAdapter = {
+    provider: "openai-compatible",
+    generate: async (req: GenerateRequest): Promise<UnifiedResponse> => ({
+      text: textArb ?? "mock response with function and 42 and hello interface type",
+      model_id: "test-model",
+      provider: "openai-compatible",
+      usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 },
+    }),
+    healthCheck: async (entry: ModelEntry) => ({
+      model_id: entry.id,
+      provider: "openai-compatible",
+      reachable: true,
+      latency_ms: 50,
+    }),
+  };
+  const map = new Map<string, ProviderAdapter>();
+  map.set("ollama", adapter);
+  map.set("openai-compatible", compatAdapter);
+  return map;
 }
 
 // ─── Property 12: ベンチマークスコア範囲 ─────────────────────────────────────
